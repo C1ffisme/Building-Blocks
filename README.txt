@@ -1,3 +1,7 @@
+Building Blocks  Copyright 2015 C1ffisme
+https://github.com/C1ffisme/Building-Blocks
+Released under GPL Version 3.
+
 Controls:
 
 S - Save
