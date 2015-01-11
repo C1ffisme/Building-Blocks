@@ -1,0 +1,4 @@
+*.pyc
+*~ 
+world/world.txt
+world/pos.txt
