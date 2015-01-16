@@ -62,7 +62,7 @@ def get_node(x,y):
 	if str(int(x))+","+str(int(y)) in world:
 		return(world[str(int(x))+","+str(int(y))])
 	else:
-		return("Void")
+		return("Air")
 	
 def get_player_x():
 	scrollcheck = scrollx%16
@@ -518,7 +518,9 @@ while True:
 					
 			 	
 	scrollcheck = (scrollx%16)
-	# Gravity
+	# Gravity and Falling to death
+	if scrolly < -800:
+		health -=1 # If you fall off of the world, you will die.
 	if get_node(get_player_x(),get_player_y()) in dropthrough:
 		gravityon = True
 		if get_node(get_player_x(),get_player_y()) == "Water" or get_node(get_player_x(),get_player_y()) == "FlowingWater":
@@ -535,13 +537,12 @@ while True:
 			if gravitytimer > 60: # If I fell even farther, give even more damage.
 				health -= 1
 		gravitytimer = 0
-		
 	if not gravityon: # Puts you strait on the ground if you missed it.
 		scrolly += scrolly%16 - 12
 		if (not get_node(get_player_x(),get_player_y() + 1) in dropthrough) and not get_node_passible(get_player_x(),get_player_y()+1,0):
 			scrolly += 16
 	if scrolly > -290:
-		screen.blit(pygame.image.load("textures/Underground.png"),(0,scrolly+((int(300)-14.5)))) # Makes underground dark.
+		screen.blit(pygame.image.load("textures/Underground.png"),(0,scrolly+((int(300)-14.5)))) # Makes underground background.
 	else:
 		screen.blit(pygame.image.load("textures/Underground.png"),(0,0)) # Makes underground dark.
 	# ABMs, Physics, Block drawing, etc.
