@@ -30,6 +30,7 @@ def write(text, start_x,y):
 		xadd += 7
 	
 new_node("grass",{"description" : "Grass","hard" : "no"})
+new_node("tnt",{"description" : "Tnt","hard" : "no","texture" : "TNT.png"})
 new_node("tallgrass",{"description" : "TallGrass","hard" : "no","passthrough":"yes"})
 new_node("door",{"description" : "Door","hard" : "yes","passthrough":"yes"})
 new_node("door_closed",{"description" : "Door_Closed","hard" : "yes"})
@@ -58,6 +59,28 @@ def place_node(x,y,name):
 	name = name.lower() # You can put in either the description or the lowercase name.
 	world[str(x)+","+str(y)] = nodes[name]["description"]
 	
+def dig_node(x,y,inventory):
+	if get_node(x,y).lower() in inventory:
+		if inventory["pick"] != "" or nodes[get_node(sx,sy).lower()]["hard"] == "no" or flags["mode"] == "Creative":
+			inventory[get_node(x,y).lower()] += 1
+			old_node = get_node(x,y)
+			place_node(x,y,"air")
+		if inventory["pick"] == "" and "ow" in nodes[old_node.lower()] and flags["mode"] == "Survival":
+			health -= 1
+	else:
+		if inventory["pick"] != "" or nodes[get_node(sx,sy).lower()]["hard"] == "no" or flags["mode"] == "Creative":
+			inventory[get_node(x,y).lower()] = 1
+			place_node(x,y,"air")
+			
+def explode(x,y,inventory):
+	play_sound("sounds/explode.ogg")
+	dig_node(x,y,inventory)
+	for sx in range(-1,2):
+		for sy in range(-1,2):
+			if get_node(x+sx,y+sy) == "tnt":
+				explode(x,y,inventory)
+			else:
+				dig_node(x+sx,y+sy,inventory)
 def get_node(x,y):
 	if str(int(x))+","+str(int(y)) in world:
 		return(world[str(int(x))+","+str(int(y))])
@@ -334,7 +357,7 @@ selectnode = "stone"
 selectvar = 1
 health = 3
 gametime = 3000
-selectlist = ["stone","grass","iron","gold","brick","tree","backwall","water","sand","door","door2","wood","sapling"]
+selectlist = ["stone","grass","iron","gold","brick","tree","backwall","water","sand","door","door2","wood","tnt","sapling"]
 inventory = {"pick":""}
 pygame.key.set_repeat(1, 2)
 gravitytimer = 0
@@ -474,6 +497,12 @@ while True:
 			if selectvar > len(selectlist) -1:
 				selectvar = 0
 			selectnode = selectlist[selectvar]
+		elif event.type == pygame.KEYDOWN and event.key == K_LCTRL:
+			# Change selected item
+			selectvar -= 1
+			if selectvar < 1:
+				selectvar = len(selectlist) - 1
+			selectnode = selectlist[selectvar]
 		elif event.type == pygame.KEYDOWN and event.key == K_ESCAPE:
 			# Pause and go to the menu.
 			menu()
@@ -492,17 +521,7 @@ while True:
 					if flags["mute"] == False:
 						play_sound("sounds/place.ogg")
 				else:
-					if get_node(sx,sy).lower() in inventory:
-						if inventory["pick"] != "" or nodes[get_node(sx,sy).lower()]["hard"] == "no" or flags["mode"] == "Creative":
-							inventory[get_node(sx,sy).lower()] += 1
-							old_node = get_node(sx,sy)
-							place_node(sx,sy,"air")
-							if inventory["pick"] == "" and "ow" in nodes[old_node.lower()] and flags["mode"] == "Survival":
-								health -= 1
-					else:
-						if inventory["pick"] != "" or nodes[get_node(sx,sy).lower()]["hard"] == "no" or flags["mode"] == "Creative":
-							inventory[get_node(sx,sy).lower()] = 1
-							place_node(sx,sy,"air")
+					dig_node(sx,sy,inventory)
 					direction[1] = "pick"
 					if flags["mute"] == False:
 						play_sound("sounds/dig.ogg")
@@ -515,7 +534,8 @@ while True:
 					place_node(sx,sy,"door_closed2")
 				elif get_node(sx,sy) == "Door_Closed2":
 					place_node(sx,sy,"door2")
-					
+				if get_node(sx,sy) == "Tnt":
+					explode(sx,sy,inventory)
 			 	
 	scrollcheck = (scrollx%16)
 	# Gravity and Falling to death
@@ -588,7 +608,10 @@ while True:
 		if world[block] != "Air":
 			if scrollx+((int(x)-20) * -16) < 610 and scrollx+((int(x)-20) * -16) > -10:
 				if scrolly+((int(y)-14)* -16) < 410 and scrolly+((int(y)-14)* -16) > -30:
-					screen.blit(pygame.image.load("textures/" + world[block] + ".png"),(scrollx+((int(x)-19.5) * -16),scrolly+((int(y)-14.5)* -16)))
+					if "texture" in nodes[world[block].lower()]:
+						screen.blit(pygame.image.load("textures/" + nodes[world[block].lower()]["texture"]),(scrollx+((int(x)-19.5) * -16),scrolly+((int(y)-14.5)* -16)))
+					else:
+						screen.blit(pygame.image.load("textures/" + world[block] + ".png"),(scrollx+((int(x)-19.5) * -16),scrolly+((int(y)-14.5)* -16)))
 	if flags["mode"] == "Survival": # Hearts, Death Screen and Respawn.
 		if health > 2:
 			screen.blit(pygame.image.load("textures/player/heart.png"),(20,20))
@@ -610,7 +633,10 @@ while True:
 		player = pygame.transform.flip(player,True,False)
 	screen.blit(player,(306,204))
 	screen.blit(pygame.image.load("textures/BlockSelect.png"),(550,25))
-	screen.blit(pygame.image.load("textures/" + nodes[selectnode]["description"] + ".png"),(552,27))
+	if "texture" in nodes[selectnode]:
+		screen.blit(pygame.image.load("textures/" + nodes[selectnode]["texture"]),(552,27))
+	else:
+		screen.blit(pygame.image.load("textures/" + nodes[selectnode]["description"] + ".png"),(552,27))
 	if flags["mode"] == "Survival":
 		xadd = 0
 		if selectnode in inventory:
