@@ -59,11 +59,11 @@ def place_node(x,y,name):
 	name = name.lower() # You can put in either the description or the lowercase name.
 	world[str(x)+","+str(y)] = nodes[name]["description"]
 	
-def dig_node(x,y,inventory):
+def dig_node(x,y,inventory,health):
+	old_node = get_node(x,y)
 	if get_node(x,y).lower() in inventory:
 		if inventory["pick"] != "" or nodes[get_node(sx,sy).lower()]["hard"] == "no" or flags["mode"] == "Creative":
 			inventory[get_node(x,y).lower()] += 1
-			old_node = get_node(x,y)
 			place_node(x,y,"air")
 		if inventory["pick"] == "" and "ow" in nodes[old_node.lower()] and flags["mode"] == "Survival":
 			health -= 1
@@ -72,15 +72,15 @@ def dig_node(x,y,inventory):
 			inventory[get_node(x,y).lower()] = 1
 			place_node(x,y,"air")
 			
-def explode(x,y,inventory):
+def explode(x,y,inventory,health):
 	play_sound("sounds/explode.ogg")
-	dig_node(x,y,inventory)
+	dig_node(x,y,inventory,health)
 	for sx in range(-1,2):
 		for sy in range(-1,2):
 			if get_node(x+sx,y+sy) == "tnt":
-				explode(x,y,inventory)
+				explode(x+sx,y+sy,inventory,health)
 			else:
-				dig_node(x+sx,y+sy,inventory)
+				dig_node(x+sx,y+sy,inventory,health)
 def get_node(x,y):
 	if str(int(x))+","+str(int(y)) in world:
 		return(world[str(int(x))+","+str(int(y))])
@@ -521,7 +521,7 @@ while True:
 					if flags["mute"] == False:
 						play_sound("sounds/place.ogg")
 				else:
-					dig_node(sx,sy,inventory)
+					dig_node(sx,sy,inventory,health)
 					direction[1] = "pick"
 					if flags["mute"] == False:
 						play_sound("sounds/dig.ogg")
@@ -535,7 +535,7 @@ while True:
 				elif get_node(sx,sy) == "Door_Closed2":
 					place_node(sx,sy,"door2")
 				if get_node(sx,sy) == "Tnt":
-					explode(sx,sy,inventory)
+					explode(sx,sy,inventory,health)
 			 	
 	scrollcheck = (scrollx%16)
 	# Gravity and Falling to death
