@@ -77,7 +77,7 @@ def explode(x,y,inventory,health):
 	dig_node(x,y,inventory,health)
 	for sx in range(-1,2):
 		for sy in range(-1,2):
-			if get_node(x+sx,y+sy) == "tnt":
+			if get_node(x+sx,y+sy).lower() == "tnt":
 				explode(x+sx,y+sy,inventory,health)
 			else:
 				dig_node(x+sx,y+sy,inventory,health)
