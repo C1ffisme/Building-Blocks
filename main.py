@@ -85,7 +85,7 @@ def get_node(x,y):
 	if str(int(x))+","+str(int(y)) in world:
 		return(world[str(int(x))+","+str(int(y))])
 	else:
-		return("Air")
+		return("Stone")
 	
 def get_player_x():
 	scrollcheck = scrollx%16
@@ -247,7 +247,8 @@ def craft():
 	door1button = Rect(250,250,16,32)
 	door2button = Rect(350,250,12,32)
 	exitbutton = Rect(300,300,41,23)
-	saplingbutton = Rect(250,200,41,23)
+	saplingbutton = Rect(250,200,16,16)
+	wallbutton = Rect(250,225,16,16)
 	infotext = ""
 	leave = 0
 	while leave != 1:
@@ -258,6 +259,7 @@ def craft():
 		screen.blit(pygame.image.load("textures/Door2.png"),(350,250))
 		screen.blit(pygame.image.load("textures/Menu/Exit_up.png"),(300,300))
 		screen.blit(pygame.image.load("textures/Sapling.png"),(250,200))
+		screen.blit(pygame.image.load("textures/BackWall.png"),(250,225))
 		mouse_x,mouse_y = pygame.mouse.get_pos()
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
@@ -275,10 +277,10 @@ def craft():
 							inventory["tree"] -= 1
 							infotext = "Wood is made from trees."
 						else:
-							infotext = "You do not have enough items."
+							infotext = "You do not have enough items. (You need 1 log.)"
 					else:
 						inventory["tree"] = 0
-						infotext = "You do not have enough items."
+						infotext = "You do not have enough items. (You need 1 log.)"
 				if pygame.Rect.collidepoint(woodpick,(mouse_x,mouse_y)):
 					play_sound("sounds/click.ogg")
 					if "wood" in inventory:
@@ -288,10 +290,10 @@ def craft():
 							inventory["wood"] -= 4
 							infotext = "With a wood pick, you can mine stone and ore."
 						else:
-							infotext = "You do not have enough items."
+							infotext = "You do not have enough items. (You need 4 wood.)"
 					else:
 						inventory["wood"] = 0
-						infotext = "You do not have enough items."
+						infotext = "You do not have enough items. (You need 4 wood.)"
 				if pygame.Rect.collidepoint(saplingbutton,(mouse_x,mouse_y)):
 					play_sound("sounds/click.ogg")
 					if not "sapling" in inventory:
@@ -318,10 +320,10 @@ def craft():
 							inventory["wood"] -= 6
 							infotext = "This is a right side door. Doors can be opened and closed with a right click."
 						else:
-							infotext = "You do not have enough items."
+							infotext = "You do not have enough items. (You need 6 wood.)"
 					else:
 						inventory["wood"] = 0
-						infotext = "You do not have enough items."
+						infotext = "You do not have enough items. (You need 6 wood.)"
 				if pygame.Rect.collidepoint(door2button,(mouse_x,mouse_y)):
 					play_sound("sounds/click.ogg")
 					if not "door2" in inventory:
@@ -331,12 +333,27 @@ def craft():
 							print("You have crafted a door.")
 							inventory["door2"] += 1
 							inventory["wood"] -= 6
-							infotext = "This is a left side door. Doors can be opened and closed with a right click."
+							infotext = "This is a left side door. Doors can be opened and closed with a right click. (You need 6 wood.)"
 						else:
-							infotext = "You do not have enough items."
+							infotext = "You do not have enough items. (You need 6 wood.)"
 					else:
 						inventory["wood"] = 0
 						infotext = "You do not have enough items."
+				if pygame.Rect.collidepoint(wallbutton,(mouse_x,mouse_y)):
+					play_sound("sounds/click.ogg")
+					if not "backwall" in inventory:
+						inventory["backwall"] = 0
+					if "tree" in inventory:
+						if inventory["tree"] >= 1:
+							print("You have crafted a door.")
+							inventory["backwall"] += 16
+							inventory["tree"] -= 1
+							infotext = "This is a back wall, which you can use to make your house not see-through."
+						else:
+							infotext = "You do not have enough items. (You need 1 log)"
+					else:
+						inventory["tree"] = 0
+						infotext = "You do not have enough items. (You need 1 log)"
 				if pygame.Rect.collidepoint(exitbutton,(mouse_x,mouse_y)):
 					play_sound("sounds/click.ogg")
 					print("Okay, Crafting Completed.")
@@ -608,10 +625,10 @@ while True:
 		if world[block] != "Air":
 			if scrollx+((int(x)-20) * -16) < 610 and scrollx+((int(x)-20) * -16) > -10:
 				if scrolly+((int(y)-14)* -16) < 410 and scrolly+((int(y)-14)* -16) > -30:
-					if "texture" in nodes[world[block].lower()]:
-						screen.blit(pygame.image.load("textures/" + nodes[world[block].lower()]["texture"]),(scrollx+((int(x)-19.5) * -16),scrolly+((int(y)-14.5)* -16)))
+					if "texture" in nodes[get_node(x,y).lower()]:
+						screen.blit(pygame.image.load("textures/" + nodes[get_node(x,y).lower()]["texture"]),(scrollx+((int(x)-19.5) * -16),scrolly+((int(y)-14.5)* -16)))
 					else:
-						screen.blit(pygame.image.load("textures/" + world[block] + ".png"),(scrollx+((int(x)-19.5) * -16),scrolly+((int(y)-14.5)* -16)))
+						screen.blit(pygame.image.load("textures/" + get_node(x,y) + ".png"),(scrollx+((int(x)-19.5) * -16),scrolly+((int(y)-14.5)* -16)))
 	if flags["mode"] == "Survival": # Hearts, Death Screen and Respawn.
 		if health > 2:
 			screen.blit(pygame.image.load("textures/player/heart.png"),(20,20))
