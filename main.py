@@ -106,6 +106,7 @@ maplimity2 = 50
 def mapgen(grass,stone,air,iron,gold,tree,leaves,water,sand,tallgrass):
 	MAPGEN_WATER = 0
 	MAPGEN_BIOME = "Grassy"
+	MAPGEN_HEIGHT = 0
 	#PREMAPGEN
 	x = maplimitx1-1
 	while x != maplimitx2+1:
@@ -114,56 +115,12 @@ def mapgen(grass,stone,air,iron,gold,tree,leaves,water,sand,tallgrass):
 			place_node(x,y,air)
 			y += 1
 		x += 1
-	#MAPGEN
+	#STONE MAPGEN
 	x = maplimitx1
 	while x != maplimitx2:
 		y = maplimity1
 		while y != maplimity2:
-			if y == 1 and y > 0:
-				if random.randint(1,10) == 1 and MAPGEN_WATER == 0:
-					MAPGEN_WATER = 1
-				if random.randint(1,7) == 1 and MAPGEN_WATER == 1:
-					MAPGEN_WATER = 0
-				if MAPGEN_WATER == 0:
-					if get_node(x-1,y).lower() == water:
-						place_node(x,y,sand)
-						place_node(x-1,y-1,sand)
-					else:
-						if random.randint(1,10) == 1 and MAPGEN_BIOME == "Grassy":
-							MAPGEN_BIOME = "Desert"
-						if random.randint(1,7) == 1 and MAPGEN_BIOME == "Desert":
-							MAPGEN_BIOME = "Grassy"
-						if MAPGEN_BIOME == "Grassy":
-							place_node(x,y,grass)
-						elif MAPGEN_BIOME == "Desert":
-							place_node(x,y,sand)
-							if random.randint(1,2) == 1:
-								place_node(x,y-1,sand)
-				else:
-					if get_node(x-1,y).lower() == grass:
-						place_node(x,y,sand)
-					else:
-						if random.randint(1,3) == 2 and get_node(x-1,y).lower() != sand:
-							place_node(x,y,water)
-							place_node(x,y-1,water)
-							place_node(x,y-2,sand)
-						else:
-							place_node(x,y,water)
-							place_node(x,y-1,sand)
-				if random.randint(1,5) == 1 and MAPGEN_WATER == 0 and MAPGEN_BIOME == "Grassy":
-					treeheight = 1
-					for i in range(1,random.randint(3,4)):
-						place_node(x,y+i,tree)
-						treeheight += 1
-					place_node(x,y+treeheight,leaves)
-					place_node(x+1,y+treeheight-1,leaves)
-					place_node(x-1,y+treeheight-1,leaves)
-				elif random.randint(1,5) == 1 and MAPGEN_WATER == 0 and MAPGEN_BIOME == "Grassy": # You may wonder what is different here. This new random will be different from the first, which causes this to work. Don't code like this, though.
-					place_node(x,y+1, tallgrass)
-				elif random.randint(1,5) == 1 and MAPGEN_WATER == 0 and MAPGEN_BIOME == "Desert":
-					place_node(x,y+1,"cactus")
-					place_node(x,y+2,"cactus") # Meh, forget asking for cactus name. I think I'll stop using arguments for this function eventually.
-			elif y < 1 and y > -11:
+			if y < 1 and y > -11:
 				place_node(x,y,stone)
 			elif y < -10:
 				randoint = random.randint(1,15)
@@ -176,7 +133,63 @@ def mapgen(grass,stone,air,iron,gold,tree,leaves,water,sand,tallgrass):
 			else:
 				if get_node(x,y).lower()== air:
 					place_node(x,y,air)
-			y += 1
+			y+= 1
+		x+=1
+	#MAPGEN
+	x = maplimitx1
+	while x != maplimitx2:
+		if MAPGEN_HEIGHT > -1:
+			if get_node(x-1,0).lower() == water:
+				place_node(x,0,sand)
+				place_node(x-1,-1,sand)
+			else:
+				if random.randint(1,10) == 1 and MAPGEN_BIOME == "Grassy":
+					MAPGEN_BIOME = "Desert"
+				if random.randint(1,7) == 1 and MAPGEN_BIOME == "Desert":
+					MAPGEN_BIOME = "Grassy"
+				if MAPGEN_BIOME == "Grassy":
+					place_node(x,MAPGEN_HEIGHT,grass)
+					gy = MAPGEN_HEIGHT
+					while gy > 0:
+						gy -= 1
+						place_node(x,gy,stone)
+				elif MAPGEN_BIOME == "Desert":
+					place_node(x,MAPGEN_HEIGHT,sand)
+					gy = MAPGEN_HEIGHT
+					while gy > 0:
+						gy -= 1
+						place_node(x,gy,stone)
+					if random.randint(1,2) == 1:
+						place_node(x,MAPGEN_HEIGHT-1,sand)
+		else:
+			if get_node(x-1,0).lower() == grass or get_node(x-1,1).lower() == grass: # Make Shores
+				place_node(x,-1,sand)
+			else:
+				if random.randint(1,3) == 2 and get_node(x-1,y).lower() != sand:
+					place_node(x,0,water)
+					place_node(x,-1,water) # Make deeper sand banks
+					place_node(x,-2,sand)
+				else:
+					place_node(x,0,water) # Make normal water
+					place_node(x,-1,sand)
+		if random.randint(1,5) == 1 and MAPGEN_HEIGHT > 0 and MAPGEN_BIOME == "Grassy":
+			treeheight = 1
+			for i in range(1,random.randint(3,4)):
+				place_node(x,i+MAPGEN_HEIGHT,tree)
+				treeheight += 1
+			place_node(x,treeheight+MAPGEN_HEIGHT,leaves)
+			place_node(x+1,treeheight+MAPGEN_HEIGHT-1,leaves)
+			place_node(x-1,treeheight+MAPGEN_HEIGHT-1,leaves)
+		elif random.randint(1,5) == 1 and MAPGEN_WATER == 0 and MAPGEN_BIOME == "Grassy": # You may wonder what is different here. This new random will be different from the first, which causes this to work. Don't code like this, though.
+			place_node(x,y+1+MAPGEN_HEIGHT, tallgrass)
+		elif random.randint(1,5) == 1 and MAPGEN_WATER == 0 and MAPGEN_BIOME == "Desert":
+			place_node(x,1+MAPGEN_HEIGHT,"cactus")
+			place_node(x,2+MAPGEN_HEIGHT,"cactus") # Meh, forget asking for cactus name. I think I'll stop using arguments for this function eventually.
+		MAPGEN_HEIGHT += random.randint(-1,1)
+		if MAPGEN_HEIGHT > 4:
+			MAPGEN_HEIGHT = 4
+		if MAPGEN_HEIGHT < -1:
+			MAPGEN_HEIGHT = -1
 		x += 1
 	return
 	
@@ -447,7 +460,7 @@ while True:
 		elif event.type == pygame.KEYDOWN and event.key == K_g:
 			# Find the node under the player and print it (if you are using a terminal)
 			print(get_node(scrollx/16,scrolly/16))
-			print scrolly
+			print scrollx%16
 		elif event.type == pygame.KEYDOWN and event.key == K_c:
 			# Change Clothing
 			if direction[2] == "0":
