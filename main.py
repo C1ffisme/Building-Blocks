@@ -163,7 +163,7 @@ def mapgen(grass,stone,air,iron,gold,tree,leaves,water,sand,tallgrass):
 						place_node(x,MAPGEN_HEIGHT-1,sand)
 		else:
 			if get_node(x-1,0).lower() == grass or get_node(x-1,1).lower() == grass: # Make Shores
-				place_node(x,-1,sand)
+				place_node(x-1,0,sand)
 			else:
 				if random.randint(1,3) == 2 and get_node(x-1,y).lower() != sand:
 					place_node(x,0,water)
