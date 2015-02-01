@@ -38,6 +38,7 @@ new_node("door2",{"description" : "Door2","hard" : "yes","passthrough":"yes"})
 new_node("door_closed2",{"description" : "Door_Closed2","hard" : "yes"})
 new_node("water",{"description" : "Water","hard" : "no","passthrough":"yes"})
 new_node("flowingwater",{"description" : "FlowingWater","hard" : "no","passthrough":"yes"})
+new_node("flowingwater2",{"description" : "FlowingWater2","hard" : "no","passthrough":"yes"})
 new_node("backwall",{"description" : "BackWall","hard" : "no","passthrough":"yes" })
 new_node("leaves",{"description" : "Leaves","hard" : "no","passthrough":"yes"})
 new_node("tree",{"description" : "Tree","hard" : "no","passthrough":"yes"})
@@ -610,13 +611,18 @@ while True:
 			if get_node(x,int(y)-1) == "Air" or get_node(x,int(y)-1) == "FlowingWater":
 				place_node(x,int(y)-1, "water")
 		if world[block] == "FlowingWater":
+			if get_node(int(x)-1,y) != "Water" and get_node(int(x)+1,y) != "Water":
+				place_node(x,y,"air") 
 			if get_node(x,int(y)-1) != "Air":
 				if get_node(int(x)-1,y) == "Air" and (get_node(int(x),int(y)-1) != "Air" and get_node(int(x),int(y)-1) != "Water" and get_node(int(x),int(y)-1) != "FlowingWater"):
-					place_node(int(x)-1,y,"flowingwater")
+					place_node(int(x)-1,y,"flowingwater2")
 				if get_node(int(x)+1,y) == "Air" and (get_node(int(x),int(y)-1) != "Air" and get_node(int(x),int(y)-1) != "Water" and get_node(int(x),int(y)-1) != "FlowingWater"):
-					place_node(int(x)+1,y,"flowingwater")
+					place_node(int(x)+1,y,"flowingwater2")
 			if get_node(x,int(y)-1) == "Air" or get_node(x,int(y)-1) == "FlowingWater":
 				place_node(x,int(y)-1, "water")
+		if world[block] == "FlowingWater2":
+			if get_node(int(x)-1,y) != "FlowingWater" and get_node(int(x)+1,y) != "FlowingWater":
+				place_node(x,y,"air")
 		if world[block] == "Sand" and timer == 10:
 			if get_node(x,int(y)-1) == "Air" or get_node(x,int(y)-1) == "TallGrass":
 				place_node(x,y,"air")
