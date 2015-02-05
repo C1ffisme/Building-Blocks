@@ -1,4 +1,5 @@
 import sys,pygame,random,time, pygame.mixer, json
+import os
 from pygame.locals import *
 pygame.init()
 pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=4096)
@@ -476,6 +477,9 @@ while True:
 		elif event.type == pygame.KEYDOWN and event.key == K_s:
 			# Save
 			play_sound("sounds/Save.wav")
+                        # if world/ doesn't exist, create it
+                        if not os.path.isdir("world"):
+                                os.mkdir("world")
 			WorldSave = open("world/world.txt","wb")
 			WorldSave.write(json.dumps(world))
 			
