@@ -52,7 +52,8 @@ new_node("sand",{"description" : "Sand","hard" : "no"})
 new_node("wood",{"description" : "Wood","hard" : "no"})
 new_node("sapling",{"description" : "Sapling","hard" : "no"})
 new_node("cactus",{"description" : "Cactus","hard" : "no","passthrough":"yes","ow":"yes"})
-
+new_node("iron_block",{"description" : "Iron_block","hard" : "yes"})
+new_node("gold_block",{"description" : "Gold_block","hard" : "no"})
 # This old function isn't needed. It justs prints the nodes that exist before the game starts.
 # If you really need to see the nodes that exist, look at the lines above.
 # print_nodes()
@@ -389,7 +390,7 @@ selectnode = "stone"
 selectvar = 1
 health = 3
 gametime = 3000
-selectlist = ["stone","grass","iron","gold","brick","tree","backwall","water","sand","door","door2","wood","tnt","sapling"]
+selectlist = ["stone","grass","iron","gold","brick","tree","backwall","water","sand","door","door2","wood","tnt","sapling","iron_block","gold_block"]
 inventory = {"pick":""}
 pygame.key.set_repeat(1, 2)
 gravitytimer = 0
