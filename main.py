@@ -265,6 +265,8 @@ def craft():
 	exitbutton = Rect(300,300,41,23)
 	saplingbutton = Rect(250,200,16,16)
 	wallbutton = Rect(250,225,16,16)
+	ironbutton = Rect(225,275,16,16)
+	goldbutton = Rect(200,275,16,16)
 	infotext = ""
 	leave = 0
 	while leave != 1:
@@ -276,6 +278,8 @@ def craft():
 		screen.blit(pygame.image.load("textures/Menu/Exit_up.png"),(300,300))
 		screen.blit(pygame.image.load("textures/Sapling.png"),(250,200))
 		screen.blit(pygame.image.load("textures/BackWall.png"),(250,225))
+		screen.blit(pygame.image.load("textures/Iron_block.png"),(225,275))
+		screen.blit(pygame.image.load("textures/Gold_block.png"),(200,275))
 		mouse_x,mouse_y = pygame.mouse.get_pos()
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
@@ -370,6 +374,36 @@ def craft():
 					else:
 						inventory["tree"] = 0
 						infotext = "You do not have enough items. (You need 1 log)"
+				if pygame.Rect.collidepoint(ironbutton,(mouse_x,mouse_y)):
+					play_sound("sounds/click.ogg")
+					if not "iron_block" in inventory:
+						inventory["iron_block"] = 0
+					if "iron" in inventory:
+						if inventory["iron"] >= 1:
+							print("You have crafted an iron block.")
+							inventory["iron_block"] += 16
+							inventory["iron"] -= 1
+							infotext = "This iron block is appropriate for steel block bases.."
+						else:
+							infotext = "You do not have enough items. (You need 1 iron ore)"
+					else:
+						inventory["iron"] = 0
+						infotext = "You do not have enough items. (You need 1 iron ore)"
+				if pygame.Rect.collidepoint(goldbutton,(mouse_x,mouse_y)):
+					play_sound("sounds/click.ogg")
+					if not "gold_block" in inventory:
+						inventory["gold_block"] = 0
+					if "gold" in inventory:
+						if inventory["gold"] >= 1:
+							print("You have crafted a gold block.")
+							inventory["gold_block"] += 16
+							inventory["gold"] -= 1
+							infotext = "Ooooh!!! Pretty!"
+						else:
+							infotext = "You do not have enough items. (You need 1 gold ore)"
+					else:
+						inventory["iron"] = 0
+						infotext = "You do not have enough items. (You need 1 gold ore)"
 				if pygame.Rect.collidepoint(exitbutton,(mouse_x,mouse_y)):
 					play_sound("sounds/click.ogg")
 					print("Okay, Crafting Completed.")
