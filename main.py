@@ -462,9 +462,13 @@ while True:
 			sys.exit()
 		elif event.type == pygame.KEYDOWN and pygame.key.get_pressed()[K_LEFT]:
 			# Go left
+			ajust = 0
+			if (scrollx/16.0) > 0:
+				ajust = 0.75
+	
 			direction[0] = "left"
 			direction[1] = ""
-			if get_node_passible((scrollx/16.0),(scrolly/16)+1,-0.25) and get_node_passible((scrollx/16),(scrolly/16)+2,-0.25):
+			if get_node_passible((scrollx/16.0)+ajust,(scrolly/16)+1,-0.25) and get_node_passible((scrollx/16)+ajust,(scrolly/16)+2,-0.25):
 				if get_node(get_player_x(),get_player_y()) == "Water" or get_node(get_player_x(),get_player_y()) == "FlowingWater":
 					scrollx += 2
 					ychange += 1
