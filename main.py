@@ -420,6 +420,7 @@ scrollx = 0
 scrolly = 0
 direction = ["right","","0"]
 jumpyness = 0
+yvelocity = 0
 selectnode = "stone"
 selectvar = 1
 health = 3
@@ -496,7 +497,8 @@ while True:
 				if get_node(get_player_x(),get_player_y()) == "Water" or get_node(get_player_x(),get_player_y()) == "FlowingWater":
 					scrolly += 2
 				else:
-					scrolly += 28
+					# scrolly += 28
+					yvelocity += 20
 					gravitytimer = 0
 		elif event.type == pygame.KEYDOWN and event.key == K_g:
 			# Find the node under the player and print it (if you are using a terminal)
@@ -612,6 +614,9 @@ while True:
 					explode(sx,sy,inventory,health)
 			 	
 	scrollcheck = (scrollx%16)
+	if not yvelocity <= 0:
+		yvelocity -= 4
+		scrolly += yvelocity
 	# Gravity and Falling to death
 	if scrolly < -800:
 		health -=1 # If you fall off of the world, you will die.
