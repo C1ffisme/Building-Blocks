@@ -258,29 +258,41 @@ def menu():
 		pygame.display.flip()
 
 def craft():
-	woodpick = Rect(300,200,16,16)
-	woodbutton = Rect(300,250,16,16)
-	door1button = Rect(250,250,16,32)
-	door2button = Rect(350,250,12,32)
-	exitbutton = Rect(300,300,41,23)
-	saplingbutton = Rect(250,200,16,16)
-	wallbutton = Rect(250,225,16,16)
-	ironbutton = Rect(225,275,16,16)
-	goldbutton = Rect(200,275,16,16)
 	infotext = ""
+	scroll = 0
 	leave = 0
 	while leave != 1:
-		screen.blit(pygame.image.load("textures/craft.png"),(0,0))
-		screen.blit(pygame.image.load("textures/Pick_Wood.png"),(300,200))
-		screen.blit(pygame.image.load("textures/Wood.png"),(300,250))
-		screen.blit(pygame.image.load("textures/Door.png"),(250,250))
-		screen.blit(pygame.image.load("textures/Door2.png"),(350,250))
-		screen.blit(pygame.image.load("textures/Menu/Exit_up.png"),(300,300))
-		screen.blit(pygame.image.load("textures/Sapling.png"),(250,200))
-		screen.blit(pygame.image.load("textures/BackWall.png"),(250,225))
-		screen.blit(pygame.image.load("textures/Iron_block.png"),(225,275))
-		screen.blit(pygame.image.load("textures/Gold_block.png"),(200,275))
+		woodpick = Rect(150+scroll,200,32,32)
+		woodbutton = Rect(100+scroll,200,32,32)
+		door1button = Rect(200+scroll,200,32,32)
+		door2button = Rect(250+scroll,200,32,32)
+		exitbutton = Rect(300,300,41,23)
+		saplingbutton = Rect(300+scroll,200,32,32)
+		wallbutton = Rect(350+scroll,200,32,32)
+		ironbutton = Rect(400+scroll,200,32,32)
+		goldbutton = Rect(450+scroll,200,32,32)
 		mouse_x,mouse_y = pygame.mouse.get_pos()
+		textures = [pygame.image.load("textures/Wood.png"),pygame.image.load("textures/Pick_Wood.png"),pygame.image.load("textures/Menu/Tiny_Door.png"),pygame.image.load("textures/Menu/Tiny_Door2.png"),pygame.image.load("textures/Sapling.png"),pygame.image.load("textures/BackWall.png"),pygame.image.load("textures/Iron_block.png"),pygame.image.load("textures/Gold_block.png")]
+		screen.blit(pygame.image.load("textures/craft.png"),(0,0))
+		screen.blit(pygame.image.load("textures/Menu/Exit_up.png"),(300,300))
+		keys = ["wood","pick","left door","right door","sapling","wall","iron","gold"]
+		crafts = {"wood":["1 Tree",woodbutton],"pick":["4 Wood",woodpick],"sapling":["1 Leaf Block",saplingbutton],"left door":["6 Wood planks",door1button],"right door":["6 Wood planks",door2button],"wall":["1 Tree",wallbutton],"iron":["1 Iron Ore",ironbutton],"gold":["1 Gold Ore",goldbutton]}
+		i = 0
+		for texture in textures:
+			tilebackground = pygame.image.load("textures/Menu/Craft_Background.png")
+			if pygame.Rect.collidepoint(Rect((96 + (i * 50))+scroll,196,40,40),(mouse_x,mouse_y)):
+				tilebackground = pygame.transform.scale(tilebackground,(45,45))
+				scaleimage = 4
+			else:
+				tilebackground = pygame.transform.scale(tilebackground,(40,40))
+				scaleimage = 0
+			screen.blit(tilebackground,((96 + (i * 50))+scroll,196))
+			screen.blit(pygame.transform.scale(texture,(32+scaleimage,32+scaleimage)),((100 + (i * 50))+scroll,200))
+			screen.blit(pygame.font.Font('freesansbold.ttf',7).render(crafts[keys[i]][0],True,(0,0,0)),((90 + (i * 50))+scroll,240))
+			screen.blit(pygame.font.Font('freesansbold.ttf',7).render(keys[i].upper(),True,(0,0,0)),((95 + (i * 50))+scroll,185))
+			i += 1
+		screen.blit(pygame.image.load("textures/Menu/ScrollLeft.png"),(0,0))
+		screen.blit(pygame.image.load("textures/Menu/ScrollRight.png"),(500,0))
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				sys.exit()
@@ -381,7 +393,7 @@ def craft():
 					if "iron" in inventory:
 						if inventory["iron"] >= 1:
 							print("You have crafted an iron block.")
-							inventory["iron_block"] += 16
+							inventory["iron_block"] += 1
 							inventory["iron"] -= 1
 							infotext = "This iron block is appropriate for steel block bases.."
 						else:
@@ -396,13 +408,13 @@ def craft():
 					if "gold" in inventory:
 						if inventory["gold"] >= 1:
 							print("You have crafted a gold block.")
-							inventory["gold_block"] += 16
+							inventory["gold_block"] += 1
 							inventory["gold"] -= 1
 							infotext = "Ooooh!!! Pretty!"
 						else:
 							infotext = "You do not have enough items. (You need 1 gold ore)"
 					else:
-						inventory["iron"] = 0
+						inventory["gold"] = 0
 						infotext = "You do not have enough items. (You need 1 gold ore)"
 				if pygame.Rect.collidepoint(exitbutton,(mouse_x,mouse_y)):
 					play_sound("sounds/click.ogg")
@@ -410,6 +422,11 @@ def craft():
 					screen.blit(pygame.image.load("textures/Menu/Exit_down.png"),(300,200))
 					time.sleep(0.5)
 					leave = 1
+		if mouse_x > 500:
+			scroll -= 2
+		if mouse_x < 100:
+			scroll += 2
+					
 		write(infotext,30,30)
 		pygame.display.flip()
 
