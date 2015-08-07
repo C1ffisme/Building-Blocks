@@ -395,7 +395,7 @@ def craft():
 							print("You have crafted an iron block.")
 							inventory["iron_block"] += 1
 							inventory["iron"] -= 1
-							infotext = "This iron block is appropriate for steel block bases.."
+							infotext = "This iron block is appropriate for steel block bases."
 						else:
 							infotext = "You do not have enough items. (You need 1 iron ore)"
 					else:
@@ -431,6 +431,7 @@ def craft():
 		pygame.display.flip()
 
 menu()
+resolution = 2 # This affects the zoom. Use higher values to zoom in and use less textures. (Note that for values bigger than 5, you cant see or dig anything below you.)
 ychange = -1
 timer = 0
 scrollx = 0
@@ -531,7 +532,8 @@ while True:
 				direction[2] = "0"
 		elif event.type == pygame.KEYDOWN and event.key == K_m:
 			# Make stuff, or craft if your from minecraft.
-			craft()
+			if flags["mode"] == "Survival":
+				craft()
 		elif event.type == pygame.KEYDOWN and event.key == K_s:
 			# Save
 			play_sound("sounds/Save.wav")
@@ -602,7 +604,7 @@ while True:
 		elif event.type == pygame.MOUSEBUTTONDOWN:
 			# Build or dig
 			mouse_x,mouse_y = pygame.mouse.get_pos()
-			spos = sx,sy = (int(round((-(mouse_x/16)+19.7)+scrollx/16)),int(round((-(mouse_y/16)+14.7)+scrolly/16)))
+			spos = sx,sy = (int(round((-((mouse_x+(308*(resolution-1)))/(16*resolution))+19.25)+scrollx/(16))),int(round((-((mouse_y+(200*(resolution-1)))/(16*resolution))+14.5)+scrolly/(16))))
 			if event.button == 1: # Dig or Build
 				if get_node(sx,sy) == "Air" or get_node(sx,sy) == "Water" or get_node(sx,sy) == "FlowingWater":
 					if selectnode in inventory and flags["mode"] == "Survival" and inventory[selectnode] > 0:
@@ -710,9 +712,9 @@ while True:
 			if scrollx+((int(x)-20) * -16) < 610 and scrollx+((int(x)-20) * -16) > -10:
 				if scrolly+((int(y)-14)* -16) < 410 and scrolly+((int(y)-14)* -16) > -30:
 					if "texture" in nodes[get_node(x,y).lower()]:
-						screen.blit(pygame.image.load("textures/" + nodes[get_node(x,y).lower()]["texture"]),(scrollx+((int(x)-19.5) * -16),scrolly+((int(y)-14.5)* -16)))
+						screen.blit(pygame.transform.scale(pygame.image.load("textures/" + nodes[get_node(x,y).lower()]["texture"]),(16*resolution,16*resolution),((scrollx+((int(x)-19.5) * -16))*resolution,(scrolly+((int(y)-14.5)* -16))*resolution)))
 					else:
-						screen.blit(pygame.image.load("textures/" + get_node(x,y) + ".png"),(scrollx+((int(x)-19.5) * -16),scrolly+((int(y)-14.5)* -16)))
+						screen.blit(pygame.transform.scale(pygame.image.load("textures/" + get_node(x,y) + ".png"),(16*resolution,16*resolution)),((scrollx*resolution+((int(x)-19.5) * -16*resolution))-(308*(resolution-1)),(scrolly+((int(y)-14.5)* -16))*resolution-(208*(resolution-1))))
 	if flags["mode"] == "Survival": # Hearts, Death Screen and Respawn.
 		if health > 2:
 			screen.blit(pygame.image.load("textures/player/heart.png"),(20,20))
@@ -728,7 +730,7 @@ while True:
 			scrollx = 0
 			scrolly = 0
 	# Render the player
-	player = pygame.transform.scale(pygame.image.load("textures/player/playerleft" + direction[1] + direction[2] + ".png"),(32,40))
+	player = pygame.transform.scale(pygame.image.load("textures/player/playerleft" + direction[1] + direction[2] + ".png"),(32*resolution,40*resolution))
 	if direction[0] == "right":
 		# If he is pointing in another direction, turn around.
 		player = pygame.transform.flip(player,True,False)
