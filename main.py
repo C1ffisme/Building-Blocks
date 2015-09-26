@@ -433,6 +433,7 @@ def craft():
 menu()
 resolution = 2 # This affects the zoom. Use higher values to zoom in and use less textures. (Note that for values bigger than 5, you cant see or dig anything below you.)
 ychange = -1
+animationvariable = 0
 timer = 0
 scrollx = 0
 scrolly = 0
@@ -451,6 +452,7 @@ dropthrough = ["Air","Water","FlowingWater","BackWall","TallGrass"]
 old_top_text = ""
 top_text = ""
 top_text_timer = 0
+moving = False
 ## Functions to make it easier.
 def get_node_passible(x,y,modder):
 	if "passthrough" in nodes[get_node(x+modder,y).lower()]:
@@ -481,6 +483,7 @@ while True:
 			sys.exit()
 		elif event.type == pygame.KEYDOWN and pygame.key.get_pressed()[K_LEFT]:
 			# Go left
+			moving = True
 			ajust = 0
 			if (scrollx/16.0) > 0:
 				ajust = 0.75
@@ -496,9 +499,12 @@ while True:
 					scrolly += ychange
 				else:
 					scrollx += 2
+		elif not event.type == pygame.KEYDOWN and not event.type == pygame.MOUSEBUTTONDOWN:
+			moving = False
 		elif event.type == pygame.KEYDOWN and pygame.key.get_pressed()[K_RIGHT]:
 			direction[0] = "right"
 			direction[1] = ""
+			moving = True
 			# Go right
 			if get_node_passible((scrollx/16),(scrolly/16)+1,0) and get_node_passible((scrollx/16),(scrolly/16)+2,0):
 				if get_node(get_player_x(),get_player_y()) == "Water" or get_node(get_player_x(),get_player_y()) == "FlowingWater":
@@ -509,6 +515,8 @@ while True:
 					scrolly += ychange
 				else:
 					scrollx -= 2
+		elif not event.type == pygame.KEYDOWN and pygame.key.get_pressed()[K_RIGHT]:
+			moving = False
 		elif event.type == pygame.KEYDOWN and pygame.key.get_pressed()[K_UP]:
 			# Jump
 			if get_node(scrollx/16,scrolly/16) != "Air" and get_node_passible(get_player_x(),get_player_y()+3,0):
@@ -630,7 +638,18 @@ while True:
 				elif get_node(sx,sy) == "Door_Closed2":
 					place_node(sx,sy,"door2")
 				if get_node(sx,sy) == "Tnt":
-					explode(sx,sy,inventory,health)
+					explode(sx,sy,inventory,health)		
+	if moving == True:
+		animationvariable += 1
+		if animationvariable == 10:
+			direction[1] = "walk"
+			animationvariable = 1
+		elif animationvariable > 5:
+			direction[1] = "walk"
+		else:
+			direction[1] = ""
+	elif moving == False:
+		direction[1] = ""
 			 	
 	scrollcheck = (scrollx%16)
 	if not yvelocity <= 0:
