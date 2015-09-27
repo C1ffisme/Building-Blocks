@@ -731,7 +731,7 @@ while True:
 			if scrollx+((int(x)-20) * -16) < 610 and scrollx+((int(x)-20) * -16) > -10:
 				if scrolly+((int(y)-14)* -16) < 410 and scrolly+((int(y)-14)* -16) > -30:
 					if "texture" in nodes[get_node(x,y).lower()]:
-						screen.blit(pygame.transform.scale(pygame.image.load("textures/" + nodes[get_node(x,y).lower()]["texture"]),(16*resolution,16*resolution),((scrollx+((int(x)-19.5) * -16))*resolution,(scrolly+((int(y)-14.5)* -16))*resolution)))
+						screen.blit(pygame.transform.scale(pygame.image.load("textures/" + nodes[get_node(x,y).lower()]["texture"]),(16*resolution,16*resolution)),((scrollx*resolution+((int(x)-19.5) * -16*resolution))-(308*(resolution-1)),(scrolly+((int(y)-14.5)* -16))*resolution-(208*(resolution-1))))
 					else:
 						screen.blit(pygame.transform.scale(pygame.image.load("textures/" + get_node(x,y) + ".png"),(16*resolution,16*resolution)),((scrollx*resolution+((int(x)-19.5) * -16*resolution))-(308*(resolution-1)),(scrolly+((int(y)-14.5)* -16))*resolution-(208*(resolution-1))))
 	if flags["mode"] == "Survival": # Hearts, Death Screen and Respawn.
