@@ -612,7 +612,7 @@ while True:
 		elif event.type == pygame.MOUSEBUTTONDOWN:
 			# Build or dig
 			mouse_x,mouse_y = pygame.mouse.get_pos()
-			spos = sx,sy = (int(round((-((mouse_x+(308*(resolution-1)))/(16*resolution))+19.75)+scrollx/(16))),int(round((-((mouse_y+(200*(resolution-1)))/(16*resolution))+14.5)+scrolly/(16))))
+			spos = sx,sy = (int(round((-((mouse_x+(308*(resolution-1)))/(16*resolution))+19.75)+scrollx/(16))),int(round((-((mouse_y+(208*(resolution-1)))/(16*resolution)))+14.75+(scrolly/16))))
 			if event.button == 1: # Dig or Build
 				if get_node(sx,sy) == "Air" or get_node(sx,sy) == "Water" or get_node(sx,sy) == "FlowingWater":
 					if selectnode in inventory and flags["mode"] == "Survival" and inventory[selectnode] > 0:
