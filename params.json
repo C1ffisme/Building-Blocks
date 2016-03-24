@@ -1,0 +1,6 @@
+{
+  "name": "Building-blocks",
+  "tagline": "This is a game I made in python. It's not quite completed, but fun at the moment.",
+  "body": "Building Blocks is a small, two dimensional environment that mimics Terraria. While it is empty, and in need of features, we currently have:\r\n- Map Generation (With hills, biomes and trees)\r\n- A 'Survival Mode'\r\n- A few different kinds of blocks\r\n- A crafting menu\r\n- And much more!\r\n\r\nBuilding Blocks is coded in python and pygame, which means even an amateur programmer or bored teenager can easily fiddle around with the code.\r\n\r\nAs a game, Building Blocks is not complete, however, our [Github Page](https://github.com/C1ffisme/Building-Blocks) is open for people to submit pull requests and issues. Please help us there!\r\n",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
